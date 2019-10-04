@@ -503,7 +503,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Lobby Identifier
+  m_Text: Lobby Identifier (4 digits)
 --- !u!222 &412171648
 CanvasRenderer:
   m_ObjectHideFlags: 0

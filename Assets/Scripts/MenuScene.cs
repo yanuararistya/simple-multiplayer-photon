@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class MenuScene : MonoBehaviour
 {
     #region Constants
+    const int MIN_LOBBY_ID = 1000;
     const int MAX_LOBBY_ID = 9999;
     #endregion
 
@@ -15,35 +16,50 @@ public class MenuScene : MonoBehaviour
     #endregion
 
     #region PrivateVariables
-    int _lobbyIdentifier = 0;
+    string _lobbyIdentifier = "";
+    string _playerName = "";
     #endregion
 
     #region UnityLifecycles
     void Start ()
     {
-        _nameField.onValueChanged.AddListener(delegate{SetButtonInteractability();});
+        _nameField.onValueChanged.AddListener(delegate{
+            UpdateJoinButtonInteractability();
+            SetPlayerName();
+        });
 
-        _lobbyField.onValueChanged.AddListener(delegate{SetButtonInteractability();});
-        _lobbyField.onValueChanged.AddListener(delegate{SetLobbyIdentifier();});
+        _lobbyField.onValueChanged.AddListener(delegate{
+            UpdateJoinButtonInteractability();
+            SetLobbyIdentifier();
+        });
 
         _randomizeButton.onClick.AddListener(delegate{RandomizeLobbyIdentifier();});
     }
     #endregion
 
     #region PrivateMethods
-    void SetButtonInteractability ()
+    void UpdateJoinButtonInteractability ()
     {
-        _joinButton.interactable  = _nameField.text != "" && _lobbyField.text != "";
+        _joinButton.interactable  = _nameField.text != "" && _lobbyField.text.Length == 4;
+    }
+
+    void SetPlayerName ()
+    {
+        _playerName = _nameField.text;
     }
 
     void SetLobbyIdentifier ()
     {
-        System.Int32.TryParse(_lobbyField.text, out _lobbyIdentifier);
+        _lobbyIdentifier = _lobbyField.text;
     }
 
     void RandomizeLobbyIdentifier ()
     {
-        _lobbyIdentifier = Random.Range(0, MAX_LOBBY_ID);
+        _lobbyIdentifier = "";
+        for (int i = 0; i < _lobbyField.characterLimit; i++) {
+            _lobbyIdentifier += Random.Range(0, 9).ToString();
+        }
+
         _lobbyField.text = _lobbyIdentifier.ToString();
     }
     #endregion
