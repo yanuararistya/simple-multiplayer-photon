@@ -1269,7 +1269,7 @@ GameObject:
   - component: {fileID: 1628194030}
   - component: {fileID: 1628194031}
   m_Layer: 0
-  m_Name: LobbyManager
+  m_Name: MatchmakingManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1301,6 +1301,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2471e4a0f9952f8428695d0f6e63c75f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _menuScene: {fileID: 1460568846}
 --- !u!1 &2051792178
 GameObject:
   m_ObjectHideFlags: 0

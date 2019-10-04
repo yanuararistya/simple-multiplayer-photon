@@ -1,11 +1,15 @@
 ﻿using UnityEngine;
 using Photon.Pun;
 
-public class LobbyManager : MonoBehaviourPunCallbacks
+public class MatchmakingManager : MonoBehaviourPunCallbacks
 {
     #region Constants
     const int MAX_PLAYERS = 16;
     const string LOBBY_SCENE_NAME = "LobbyScene";
+    #endregion
+
+    #region SerializeFields
+    [SerializeField] MenuScene _menuScene = null;
     #endregion
 
     #region PrivateVariables
@@ -23,6 +27,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public void OnJoinButtonClicked ()
     {
         isConnecting = true;
+        PhotonNetwork.NickName = _menuScene.PlayerName;
 
         if (PhotonNetwork.IsConnected) {
             PhotonNetwork.JoinRandomRoom();
@@ -35,32 +40,31 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     #endregion
 
     #region PunCallbacks
-    public override void OnConnectedToMaster()
+    public override void OnConnectedToMaster ()
     {
         if (isConnecting) {
             PhotonNetwork.JoinRandomRoom();
         }
     }
 
-    public override void OnJoinRandomFailed(short returnCode, string message)
+    public override void OnJoinRandomFailed (short returnCode, string message)
     {
         PhotonNetwork.CreateRoom(null, new Photon.Realtime.RoomOptions {MaxPlayers = MAX_PLAYERS});
     }
 
-    public override void OnCreateRoomFailed(short returnCode, string message)
+    public override void OnCreateRoomFailed (short returnCode, string message)
     {
         LoadingScene.Instance.Hide();
     }
 
-    public override void OnDisconnected(Photon.Realtime.DisconnectCause cause)
+    public override void OnDisconnected (Photon.Realtime.DisconnectCause cause)
     {
         isConnecting = false;
         LoadingScene.Instance.Hide();
     }
 
-    public override void OnJoinedRoom()
+    public override void OnJoinedRoom ()
     {
-        LoadingScene.Instance.Hide();
         // only load if we are the first player
         // other than the first player scene will be synced automatically
         if (PhotonNetwork.CurrentRoom.PlayerCount == 1)

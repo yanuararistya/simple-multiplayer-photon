@@ -9,8 +9,11 @@ public class MenuScene : MonoBehaviour
     #endregion
 
     #region PrivateVariables
-    string _lobbyIdentifier = "";
     string _playerName = "";
+    #endregion
+
+    #region PublicProperties
+    public string PlayerName { get { return _playerName; } }
     #endregion
 
     #region UnityLifecycles
