@@ -3,11 +3,6 @@ using UnityEngine.UI;
 
 public class MenuScene : MonoBehaviour
 {
-    #region Constants
-    const int MIN_LOBBY_ID = 1000;
-    const int MAX_LOBBY_ID = 9999;
-    #endregion
-
     #region SerializeFields
     [SerializeField] InputField _nameField = null;
     [SerializeField] InputField _lobbyField = null;
