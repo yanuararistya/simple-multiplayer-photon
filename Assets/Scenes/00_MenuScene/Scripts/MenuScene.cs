@@ -17,7 +17,7 @@ public class MenuScene : MonoBehaviour
     #endregion
 
     #region UnityLifecycles
-    void Start ()
+    void Awake ()
     {
         _nameField.onValueChanged.AddListener(delegate{
             UpdateJoinButtonInteractability();

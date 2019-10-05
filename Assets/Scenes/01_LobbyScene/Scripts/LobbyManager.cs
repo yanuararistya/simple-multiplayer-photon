@@ -31,6 +31,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         LoadingScene.Instance.Hide();
 
+        _startButton.onClick.AddListener(OnStartButtonClicked);
+
         _onPlayerListChanged += UpdatePlayerCounter;
         _onPlayerListChanged += UpdateStartButtonInteractability;
 
@@ -77,6 +79,14 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public void OnBackButtonClicked ()
     {
         PhotonNetwork.LeaveRoom();
+    }
+
+    void OnStartButtonClicked ()
+    {
+        PhotonNetwork.CurrentRoom.IsOpen = false;
+        PhotonNetwork.CurrentRoom.IsVisible = false;
+
+        PhotonNetwork.LoadLevel(Constants.GAME_SCENE_NAME);
     }
     #endregion
 
