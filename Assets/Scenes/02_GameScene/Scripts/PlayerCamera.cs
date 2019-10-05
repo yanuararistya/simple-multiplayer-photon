@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
+using Photon.Pun;
 
 public class PlayerCamera : MonoBehaviour
 {
     #region SerializeFields
     [SerializeField] Transform _playerBody = null;
+    [SerializeField] PhotonView _photonView  = null;
     [SerializeField] float _mouseSensitivity = 150f;
     [SerializeField] float _minXRot = -90f;
     [SerializeField] float _maxXRot = 90f;
@@ -13,11 +15,21 @@ public class PlayerCamera : MonoBehaviour
     float _xAxisClamped = 0f;
     #endregion
 
-    #region UnityLifecycles
-    void FixedUpdate ()
+    void Start ()
     {
-        float mouseX = Input.GetAxis(Constants.MOUSE_X_INPUT_NAME) * _mouseSensitivity * Time.deltaTime;
-        float mouseY = Input.GetAxis(Constants.MOUSE_Y_INPUT_NAME) * _mouseSensitivity * Time.deltaTime;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    #region UnityLifecycles
+    void Update ()
+    {
+        if (!_photonView.IsMine) {
+            return;
+        }
+
+        float mouseX = Input.GetAxis(Constants.MOUSE_X_INPUT_NAME) * _mouseSensitivity;
+        float mouseY = Input.GetAxis(Constants.MOUSE_Y_INPUT_NAME) * _mouseSensitivity;
 
         _xAxisClamped += mouseY;
         if (_xAxisClamped > _maxXRot) {

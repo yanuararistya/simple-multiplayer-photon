@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Photon.Pun;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -7,23 +8,29 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region PrivateVariables
-    CharacterController _controller = null;
+    Rigidbody _rigidbody = null;
+    PhotonView _photonView = null;
     #endregion
 
     #region UnityLifecycles
     void Awake ()
     {
-        _controller = GetComponent<CharacterController>();
+        _rigidbody = GetComponent<Rigidbody>();
+        _photonView = GetComponent<PhotonView>();
     }
     void FixedUpdate ()
     {
+        if (!_photonView.IsMine) {
+            return;
+        }
+
         float hInput = Input.GetAxis(Constants.HORIZONTAL_INPUT_NAME) * _movementSpeed * Time.deltaTime;
         float vInput = Input.GetAxis(Constants.VERTICAL_INPUT_NAME) * _movementSpeed * Time.deltaTime;
 
         Vector3 forwardMove = transform.forward * vInput;
         Vector3 sidewaysMove = transform.right * hInput;
 
-        _controller.SimpleMove(forwardMove + sidewaysMove);
+        _rigidbody.MovePosition(transform.position + forwardMove + sidewaysMove);
     }
     #endregion
 }

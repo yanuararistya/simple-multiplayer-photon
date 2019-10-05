@@ -8,4 +8,7 @@
     public static string MOUSE_Y_INPUT_NAME = "Mouse Y";
     public static string HORIZONTAL_INPUT_NAME = "Horizontal";
     public static string VERTICAL_INPUT_NAME = "Vertical";
+    public static string GAME_PLAYER_PREFAB_NAME = "GamePlayerPrefab";
+    public static string START_BUTTON_CLICKED = "StartButtonClicked";
+    public static string PLAYER_LOADED_LEVEL = "PlayerLoadedLevel";
 }

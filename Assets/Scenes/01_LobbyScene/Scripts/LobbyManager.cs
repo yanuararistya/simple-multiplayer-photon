@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
 
@@ -15,6 +16,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     #region PrivateVariables
     Dictionary<Player, PlayerListItem> _playerListItemMap = new Dictionary<Player, PlayerListItem>();
+    bool isStartingGame = false;
     #endregion
 
     #region PrivateProperties
@@ -71,7 +73,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     void UpdateStartButtonInteractability ()
     {
-        _startButton.interactable = _playerCount > 1;
+        // _startButton.interactable = _playerCount > 1;
+        _startButton.interactable = _playerCount > 0;
     }
     #endregion
 
@@ -86,7 +89,10 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         PhotonNetwork.CurrentRoom.IsOpen = false;
         PhotonNetwork.CurrentRoom.IsVisible = false;
 
-        PhotonNetwork.LoadLevel(Constants.GAME_SCENE_NAME);
+        Hashtable startButtonClicked = new Hashtable {
+            { Constants.START_BUTTON_CLICKED, true }
+        };
+        PhotonNetwork.CurrentRoom.SetCustomProperties(startButtonClicked);
     }
     #endregion
 
@@ -111,6 +117,21 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public override void OnDisconnected (DisconnectCause cause)
     {
         PhotonNetwork.LoadLevel(Constants.MENU_SCENE_NAME);
+    }
+
+    public override void OnRoomPropertiesUpdate(Hashtable changedProps)
+    {
+        if (isStartingGame) {
+            return;
+        }
+
+        object isStartButtonClicked;
+        if (changedProps.TryGetValue(Constants.START_BUTTON_CLICKED, out isStartButtonClicked)) {
+            if ((bool) isStartButtonClicked) {
+                isStartingGame = true;
+                PhotonNetwork.LoadLevel(Constants.GAME_SCENE_NAME);
+            }
+        }
     }
     #endregion
 }
