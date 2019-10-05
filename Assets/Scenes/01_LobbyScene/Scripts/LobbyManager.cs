@@ -6,10 +6,6 @@ using Photon.Realtime;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
-    #region Constants
-    const string MENU_SCENE_NAME = "MenuScene";
-    #endregion
-
     #region SerializeFields
     [SerializeField] Transform _playerListContent = null;
     [SerializeField] PlayerListItem _playerListItemPrefab = null;
@@ -68,7 +64,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     void UpdatePlayerCounter ()
     {
-        _playerCounterLabel.text = string.Format("{0}/16", _playerCount);
+        _playerCounterLabel.text = string.Format("{0}/{1}", _playerCount, Constants.MAX_PLAYERS);
     }
 
     void UpdateStartButtonInteractability ()
@@ -99,12 +95,12 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public override void OnLeftRoom ()
     {
-        PhotonNetwork.LoadLevel(MENU_SCENE_NAME);
+        PhotonNetwork.LoadLevel(Constants.MENU_SCENE_NAME);
     }
 
     public override void OnDisconnected (DisconnectCause cause)
     {
-        PhotonNetwork.LoadLevel(MENU_SCENE_NAME);
+        PhotonNetwork.LoadLevel(Constants.MENU_SCENE_NAME);
     }
     #endregion
 }

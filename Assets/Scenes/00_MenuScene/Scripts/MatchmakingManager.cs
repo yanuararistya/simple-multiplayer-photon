@@ -3,11 +3,6 @@ using Photon.Pun;
 
 public class MatchmakingManager : MonoBehaviourPunCallbacks
 {
-    #region Constants
-    const int MAX_PLAYERS = 16;
-    const string LOBBY_SCENE_NAME = "LobbyScene";
-    #endregion
-
     #region SerializeFields
     [SerializeField] MenuScene _menuScene = null;
     #endregion
@@ -49,7 +44,7 @@ public class MatchmakingManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinRandomFailed (short returnCode, string message)
     {
-        PhotonNetwork.CreateRoom(null, new Photon.Realtime.RoomOptions {MaxPlayers = MAX_PLAYERS});
+        PhotonNetwork.CreateRoom(null, new Photon.Realtime.RoomOptions {MaxPlayers = (byte)Constants.MAX_PLAYERS});
     }
 
     public override void OnCreateRoomFailed (short returnCode, string message)
@@ -69,7 +64,7 @@ public class MatchmakingManager : MonoBehaviourPunCallbacks
         // other than the first player scene will be synced automatically
         if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
         {
-            PhotonNetwork.LoadLevel(LOBBY_SCENE_NAME);
+            PhotonNetwork.LoadLevel(Constants.LOBBY_SCENE_NAME);
         }
     }
     #endregion
