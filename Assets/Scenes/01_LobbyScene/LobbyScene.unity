@@ -413,7 +413,8 @@ MonoBehaviour:
   _playerListContent: {fileID: 1100104485}
   _playerListItemPrefab: {fileID: 1877879875512614505, guid: 2101c1eb87a5659468a4d840ced2b160,
     type: 3}
-  _playerCounter: {fileID: 528221076}
+  _playerCounterLabel: {fileID: 528221076}
+  _startButton: {fileID: 1526745111}
 --- !u!4 &918887129
 Transform:
   m_ObjectHideFlags: 0

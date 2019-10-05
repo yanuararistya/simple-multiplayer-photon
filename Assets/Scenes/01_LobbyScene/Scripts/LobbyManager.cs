@@ -13,24 +13,38 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     #region SerializeFields
     [SerializeField] Transform _playerListContent = null;
     [SerializeField] PlayerListItem _playerListItemPrefab = null;
-    [SerializeField] Text _playerCounter = null;
+    [SerializeField] Text _playerCounterLabel = null;
+    [SerializeField] Button _startButton = null;
     #endregion
 
     #region PrivateVariables
-    Dictionary<Player, PlayerListItem> playerListItemMap = new Dictionary<Player, PlayerListItem>();
+    Dictionary<Player, PlayerListItem> _playerListItemMap = new Dictionary<Player, PlayerListItem>();
+    #endregion
+
+    #region PrivateProperties
+    int _playerCount { get { return _playerListItemMap.Count; } }
+    #endregion
+
+    #region EventDelegates
+    delegate void OnPlayerListChanged ();
+    OnPlayerListChanged _onPlayerListChanged;
     #endregion
 
     #region UnityLifecycles
     void Awake ()
     {
         LoadingScene.Instance.Hide();
+
+        _onPlayerListChanged += UpdatePlayerCounter;
+        _onPlayerListChanged += UpdateStartButtonInteractability;
+
         if (PhotonNetwork.IsConnected) {
             Player[] playerList = PhotonNetwork.PlayerList;
             for (int i = 0; i < playerList.Length; i++) {
                 AddNewPlayer(playerList[i]);
             }
 
-            UpdatePlayerCounter();
+            _onPlayerListChanged();
         }
     }
     #endregion
@@ -40,21 +54,26 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         var playerListItem = Instantiate(_playerListItemPrefab, _playerListContent);
         playerListItem.SetName(player.NickName);
-        playerListItemMap.Add(player, playerListItem);
+        _playerListItemMap.Add(player, playerListItem);
     }
 
     void RemovePlayer (Player player)
     {
         PlayerListItem playerListItem = null;
-        if (playerListItemMap.TryGetValue(player, out playerListItem)) {
-            playerListItemMap.Remove(player);
+        if (_playerListItemMap.TryGetValue(player, out playerListItem)) {
+            _playerListItemMap.Remove(player);
             Destroy(playerListItem.gameObject);
         }
     }
 
     void UpdatePlayerCounter ()
     {
-        _playerCounter.text = string.Format("{0}/16", playerListItemMap.Count);
+        _playerCounterLabel.text = string.Format("{0}/16", _playerCount);
+    }
+
+    void UpdateStartButtonInteractability ()
+    {
+        _startButton.interactable = _playerCount > 1;
     }
     #endregion
 
@@ -69,13 +88,13 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom (Player newPlayer)
     {
         AddNewPlayer(newPlayer);
-        UpdatePlayerCounter();
+        _onPlayerListChanged();
     }
 
     public override void OnPlayerLeftRoom (Player otherPlayer)
     {
         RemovePlayer(otherPlayer);
-        UpdatePlayerCounter();
+        _onPlayerListChanged();
     }
 
     public override void OnLeftRoom ()
