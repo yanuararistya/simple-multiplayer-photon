@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
@@ -9,7 +11,13 @@ public class GameManager : MonoBehaviourPunCallbacks
     #region SerializeFields
     [SerializeField] GameObject _tempCamera = null;
     [SerializeField] GameObject _countdownCanvas = null;
+    [SerializeField] GameObject _winnerCanvas = null;
+    [SerializeField] Text _winnerLabel  = null;
     [SerializeField] float _startDistanceFromCenter = 20f;
+    #endregion
+
+    #region PrivateVariables
+    List<Player> _existingPlayers = new List<Player>();
     #endregion
 
     #region UnityLifecycles
@@ -55,6 +63,10 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     void StartGame ()
     {
+        foreach (var p in PhotonNetwork.PlayerList) {
+            _existingPlayers.Add(p);
+        }
+
         _countdownCanvas.SetActive(false);
 
         float angularStart = (360f / PhotonNetwork.CurrentRoom.PlayerCount) * PhotonNetwork.LocalPlayer.GetPlayerNumber();
@@ -66,11 +78,29 @@ public class GameManager : MonoBehaviourPunCallbacks
         Destroy(_tempCamera);
         PhotonNetwork.Instantiate(Constants.GAME_PLAYER_PREFAB_NAME, initPos, initRot);
     }
+
+    void KillPlayer (Player player)
+    {
+        _existingPlayers.Remove(player);
+        if (_existingPlayers.Count == 1) {
+            _winnerCanvas.SetActive(true);
+            _winnerLabel.text = string.Format(_winnerLabel.text, _existingPlayers[0]);
+        }
+    }
     #endregion
 
     #region PunCallbacks
     public override void OnPlayerPropertiesUpdate(Player target, Hashtable changedProps)
     {
+        if (changedProps.ContainsKey(Constants.SET_PLAYER_HEALTH)) {
+            object healthValue = null;
+            if (changedProps.TryGetValue(Constants.SET_PLAYER_HEALTH, out healthValue)) {
+                if ((int)healthValue == 0) {
+                    KillPlayer(target);
+                }
+            }
+        }
+
         if (!PhotonNetwork.IsMasterClient) {
             return;
         }
@@ -84,6 +114,11 @@ public class GameManager : MonoBehaviourPunCallbacks
                 PhotonNetwork.CurrentRoom.SetCustomProperties(startCountdown);
             }
         }
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        KillPlayer(otherPlayer);
     }
     #endregion
 }

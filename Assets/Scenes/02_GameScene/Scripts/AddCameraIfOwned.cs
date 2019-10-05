@@ -8,7 +8,7 @@ public class AddCameraIfOwned : MonoBehaviour
     #endregion
 
     #region UnityLifecycles
-    void Start ()
+    void Awake ()
     {
         if (_photonView.Owner == PhotonNetwork.LocalPlayer) {
             gameObject.AddComponent<Camera>();
