@@ -46,6 +46,9 @@ public class CheckBulletHit : MonoBehaviour
     void OnDamaged ()
     {
         _health.Decrement();
+        if (_photonView.Owner == PhotonNetwork.LocalPlayer) {
+            GameManager.Instance.UpdateHUDHealthLabel(_health.Value);
+        }
                 
         if (_health.Value == 0) {
             Destroy(_playerMovement);

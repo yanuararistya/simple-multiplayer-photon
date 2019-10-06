@@ -13,6 +13,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     [SerializeField] GameObject _countdownCanvas = null;
     [SerializeField] GameObject _winnerCanvas = null;
     [SerializeField] GameObject _crosshairCanvas = null;
+    [SerializeField] GameObject _hudCanvas = null;
+    [SerializeField] Text _localNameLabel = null;
+    [SerializeField] Text _localHealthLabel = null;
+    [SerializeField] Text _youAreDeadLabel = null;
     [SerializeField] Text _winnerLabel  = null;
     [SerializeField] float _startDistanceFromCenter = 20f;
     #endregion
@@ -41,6 +45,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     void Start ()
     {
+        _localNameLabel.text = PhotonNetwork.LocalPlayer.NickName;
+
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
@@ -89,12 +95,14 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         _countdownCanvas.SetActive(false);
         _crosshairCanvas.SetActive(true);
+        _hudCanvas.SetActive(true);
 
-        float angularStart = (360f / PhotonNetwork.CurrentRoom.PlayerCount) * PhotonNetwork.LocalPlayer.GetPlayerNumber();
+        float angle = (360f / PhotonNetwork.CurrentRoom.PlayerCount);
+        float angularStart = angle * PhotonNetwork.LocalPlayer.GetPlayerNumber();
         float x = _startDistanceFromCenter * Mathf.Sin(angularStart * Mathf.Deg2Rad);
         float z = _startDistanceFromCenter * Mathf.Cos(angularStart * Mathf.Deg2Rad);
         Vector3 initPos = new Vector3(x, 0f, z);
-        Quaternion initRot = Quaternion.Euler(0f, angularStart, 0f);
+        Quaternion initRot = Quaternion.Euler(0f, angularStart - angle, 0f);
 
         Destroy(_tempCamera);
         PhotonNetwork.Instantiate(Constants.GAME_PLAYER_PREFAB_NAME, initPos, initRot);
@@ -104,6 +112,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     #region PublicMethods
     public void KillPlayer (Player player)
     {
+        if (player == PhotonNetwork.LocalPlayer) {
+            _youAreDeadLabel.gameObject.SetActive(true);
+        }
+
         _existingPlayers.Remove(player);
         if (_existingPlayers.Count == 1) {
             isFinished = true;
@@ -115,7 +127,13 @@ public class GameManager : MonoBehaviourPunCallbacks
             Cursor.lockState = CursorLockMode.None;
 
             _crosshairCanvas.SetActive(false);
+            _hudCanvas.SetActive(false);
         }
+    }
+
+    public void UpdateHUDHealthLabel (int value)
+    {
+        _localHealthLabel.text = string.Format("Health: {0}/10", value);
     }
     #endregion
 

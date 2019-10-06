@@ -14,7 +14,6 @@ public class MatchmakingManager : MonoBehaviourPunCallbacks
     #region UnityLifecycles
     void Awake ()
     {
-        PhotonNetwork.AutomaticallySyncScene = true;
     }
     #endregion
 
@@ -60,12 +59,7 @@ public class MatchmakingManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom ()
     {
-        // only load if we are the first player
-        // other than the first player scene will be synced automatically
-        if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
-        {
-            PhotonNetwork.LoadLevel(Constants.LOBBY_SCENE_NAME);
-        }
+        PhotonNetwork.LoadLevel(Constants.LOBBY_SCENE_NAME);
     }
     #endregion
 }

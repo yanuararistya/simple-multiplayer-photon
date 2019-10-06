@@ -20,7 +20,7 @@ public class PlayerMovement : MonoBehaviour
     }
     void FixedUpdate ()
     {
-        if (!_photonView.IsMine) {
+        if (!_photonView.IsMine || GameManager.Instance.isFinished) {
             return;
         }
 
