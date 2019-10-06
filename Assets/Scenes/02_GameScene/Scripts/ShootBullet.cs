@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Photon.Pun;
+using Photon.Realtime;
 
 public class ShootBullet : MonoBehaviour
 {
@@ -21,23 +22,23 @@ public class ShootBullet : MonoBehaviour
 
     void Update ()
     {
-        if (_photonView.Owner != PhotonNetwork.LocalPlayer) {
+        if (_photonView.Owner != PhotonNetwork.LocalPlayer || GameManager.Instance.isFinished) {
             return;
         }
 
         if (Input.GetMouseButtonDown(0)) {
-            _photonView.RPC("Shoot", RpcTarget.AllViaServer, _bulletStartTransform.position, _barrel.rotation);
+            _photonView.RPC("Shoot", RpcTarget.AllViaServer, _photonView.Owner, _bulletStartTransform.position, _barrel.rotation);
         }
     }
     #endregion
 
     #region PunCallbacks
     [PunRPC]
-    public void Shoot (Vector3 position, Quaternion rotation, PhotonMessageInfo info)
+    public void Shoot (Player shooter, Vector3 position, Quaternion rotation, PhotonMessageInfo info)
     {
         float lag = (float)(PhotonNetwork.Time - info.SentServerTime);
         GameObject bulletObject = Instantiate(_bulletPrefab, position, Quaternion.identity);
-        bulletObject.GetComponent<Bullet>().InitializeBullet(rotation * Vector3.forward, lag);
+        bulletObject.GetComponent<Bullet>().InitializeBullet(shooter, rotation * Vector3.forward, lag);
     }
     #endregion
 }

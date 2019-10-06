@@ -9,8 +9,6 @@
     public static string HORIZONTAL_INPUT_NAME = "Horizontal";
     public static string VERTICAL_INPUT_NAME = "Vertical";
     public static string GAME_PLAYER_PREFAB_NAME = "GamePlayerPrefab";
-    public static string BULLET_PREFAB_NAME = "Bullet";
     public static string START_BUTTON_CLICKED = "StartButtonClicked";
     public static string PLAYER_LOADED_LEVEL = "PlayerLoadedLevel";
-    public static string SET_PLAYER_HEALTH = "SetPlayerHealth";
 }

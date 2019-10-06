@@ -15,16 +15,10 @@ public class PlayerCamera : MonoBehaviour
     float _xAxisClamped = 0f;
     #endregion
 
-    void Start ()
-    {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
-    }
-
     #region UnityLifecycles
     void Update ()
     {
-        if (!_photonView.IsMine) {
+        if (!_photonView.IsMine || GameManager.Instance.isFinished) {
             return;
         }
 

@@ -17,12 +17,6 @@ public class Health : MonoBehaviour
     void Awake ()
     {
         Value = 10;
-
-        Hashtable setInitialHealth = new Hashtable{
-            { Constants.SET_PLAYER_HEALTH, Value }
-        };
-
-        PhotonNetwork.LocalPlayer.SetCustomProperties(setInitialHealth);
     }
     #endregion
 

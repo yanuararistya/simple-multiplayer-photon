@@ -8,6 +8,7 @@ public class CheckBulletHit : MonoBehaviour
     Health _health = null;
     PlayerMovement _playerMovement = null;
     ShootBullet _shootBullet = null;
+    PhotonView _photonView = null;
     #endregion
 
     #region UnityLifecycles
@@ -16,6 +17,7 @@ public class CheckBulletHit : MonoBehaviour
         _health = GetComponent<Health>();
         _playerMovement = GetComponent<PlayerMovement>();
         _shootBullet = GetComponent<ShootBullet>();
+        _photonView = GetComponent<PhotonView>();
     }
 
     void OnCollisionEnter (Collision collision)
@@ -25,19 +27,39 @@ public class CheckBulletHit : MonoBehaviour
         }
 
         if (collision.gameObject.CompareTag("Bullet")) {
-            _health.Decrement();
+            var bullet = collision.gameObject.GetComponent<Bullet>();
 
-            Hashtable reducePlayerHealth = new Hashtable{
-                { Constants.SET_PLAYER_HEALTH, _health.Value }
-            };
+            // bullets should not damage the shooter
+            if (bullet.Shooter == _photonView.Owner) {
+                return;
+            }
 
-            PhotonNetwork.LocalPlayer.SetCustomProperties(reducePlayerHealth);
-
-            if (_health.Value == 0) {
-                Destroy(_playerMovement);
-                Destroy(_shootBullet);
+            if (bullet.Shooter == PhotonNetwork.LocalPlayer) {
+                OnDamaged();
+                _photonView.RPC("Damage", RpcTarget.Others);
             }
         }
+    }
+    #endregion
+
+    #region PrivateMethods
+    void OnDamaged ()
+    {
+        _health.Decrement();
+                
+        if (_health.Value == 0) {
+            Destroy(_playerMovement);
+            Destroy(_shootBullet);
+            GameManager.Instance.KillPlayer(_photonView.Owner);
+        }
+    }
+    #endregion
+
+    #region PunCallbacks
+    [PunRPC]
+    public void Damage (PhotonMessageInfo info)
+    {
+        OnDamaged();
     }
     #endregion
 }

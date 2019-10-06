@@ -292,7 +292,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 148391216}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1235077994}
+        m_MethodName: OnReturnToMenuButtonClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &148391216
@@ -819,9 +830,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Congratulations {0}!
-
-    You Won'
+  m_Text: '{0} Wins'
 --- !u!222 &1143788157
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -862,8 +871,10 @@ MonoBehaviour:
   _tempCamera: {fileID: 633603822}
   _countdownCanvas: {fileID: 519036057}
   _winnerCanvas: {fileID: 1647818254}
+  _crosshairCanvas: {fileID: 1280875145}
   _winnerLabel: {fileID: 1143788156}
   _startDistanceFromCenter: 20
+  isFinished: 0
 --- !u!4 &1235077995
 Transform:
   m_ObjectHideFlags: 0
@@ -896,7 +907,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1280875146
 MonoBehaviour:
   m_ObjectHideFlags: 0

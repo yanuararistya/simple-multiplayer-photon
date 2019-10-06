@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [SerializeField] GameObject _tempCamera = null;
     [SerializeField] GameObject _countdownCanvas = null;
     [SerializeField] GameObject _winnerCanvas = null;
+    [SerializeField] GameObject _crosshairCanvas = null;
     [SerializeField] Text _winnerLabel  = null;
     [SerializeField] float _startDistanceFromCenter = 20f;
     #endregion
@@ -20,10 +21,29 @@ public class GameManager : MonoBehaviourPunCallbacks
     List<Player> _existingPlayers = new List<Player>();
     #endregion
 
+    #region PublicVariables
+    public bool isFinished = false;
+    #endregion
+
+    #region Singleton
+    public static GameManager Instance { get; private set; }
+    #endregion
+
     #region UnityLifecycles
+    void Awake ()
+    {
+        if (Instance == null) {
+            Instance = this;
+        } else {
+            Destroy(this.gameObject);
+        }
+    }
+
     void Start ()
     {
         Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
         var levelLoaded = new Hashtable {
             { Constants.PLAYER_LOADED_LEVEL, true }
         };
@@ -68,6 +88,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
 
         _countdownCanvas.SetActive(false);
+        _crosshairCanvas.SetActive(true);
 
         float angularStart = (360f / PhotonNetwork.CurrentRoom.PlayerCount) * PhotonNetwork.LocalPlayer.GetPlayerNumber();
         float x = _startDistanceFromCenter * Mathf.Sin(angularStart * Mathf.Deg2Rad);
@@ -78,29 +99,37 @@ public class GameManager : MonoBehaviourPunCallbacks
         Destroy(_tempCamera);
         PhotonNetwork.Instantiate(Constants.GAME_PLAYER_PREFAB_NAME, initPos, initRot);
     }
+    #endregion
 
-    void KillPlayer (Player player)
+    #region PublicMethods
+    public void KillPlayer (Player player)
     {
         _existingPlayers.Remove(player);
         if (_existingPlayers.Count == 1) {
+            isFinished = true;
+
             _winnerCanvas.SetActive(true);
-            _winnerLabel.text = string.Format(_winnerLabel.text, _existingPlayers[0]);
+            _winnerLabel.text = string.Format(_winnerLabel.text, _existingPlayers[0].NickName);
+
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+
+            _crosshairCanvas.SetActive(false);
         }
+    }
+    #endregion
+
+    #region UICallbacks
+    public void OnReturnToMenuButtonClicked ()
+    {
+        PhotonNetwork.LeaveRoom();
+        PhotonNetwork.LoadLevel(Constants.MENU_SCENE_NAME);
     }
     #endregion
 
     #region PunCallbacks
     public override void OnPlayerPropertiesUpdate(Player target, Hashtable changedProps)
     {
-        if (changedProps.ContainsKey(Constants.SET_PLAYER_HEALTH)) {
-            object healthValue = null;
-            if (changedProps.TryGetValue(Constants.SET_PLAYER_HEALTH, out healthValue)) {
-                if ((int)healthValue == 0) {
-                    KillPlayer(target);
-                }
-            }
-        }
-
         if (!PhotonNetwork.IsMasterClient) {
             return;
         }
