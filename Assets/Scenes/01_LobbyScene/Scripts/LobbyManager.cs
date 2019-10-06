@@ -73,8 +73,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     void UpdateStartButtonInteractability ()
     {
-        // _startButton.interactable = _playerCount > 1;
-        _startButton.interactable = _playerCount > 0;
+        _startButton.interactable = _playerCount > 1;
     }
     #endregion
 
