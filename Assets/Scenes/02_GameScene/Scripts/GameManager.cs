@@ -102,7 +102,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         float x = _startDistanceFromCenter * Mathf.Sin(angularStart * Mathf.Deg2Rad);
         float z = _startDistanceFromCenter * Mathf.Cos(angularStart * Mathf.Deg2Rad);
         Vector3 initPos = new Vector3(x, 0f, z);
-        Quaternion initRot = Quaternion.Euler(0f, angularStart - angle, 0f);
+        Quaternion initRot = Quaternion.Euler(0f, angularStart - 180f, 0f);
 
         Destroy(_tempCamera);
         PhotonNetwork.Instantiate(Constants.GAME_PLAYER_PREFAB_NAME, initPos, initRot);
